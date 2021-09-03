@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Get cluster name</title>
+</head>
+<script type="text/javascript">
+
+    function post(){
+        var m = document.getElementById('miner').value;
+
+        var datestr = document.getElementById('date1').value;
+        var httppost;
+        var minerjson = {"miner": m, "date": datestr};
+        var minerid = JSON.stringify(minerjson)
+
+        if (window.XMLHttpRequest){
+            httppost = new XMLHttpRequest;
+        } else {
+            httppost = new ActiveXObject("Microsoft.XMLHTTP");
+        }
+        httppost.open("POST", "http://192.168.5.135:8000/statistics/value/", true)
+        httppost.setRequestHeader("Content-Type", "application/json")
+
+        httppost.onreadystatechange = function () {
+            var oInput = document.getElementById('p1')
+            if (httppost.status == 200 || httppost.status == 0) {
+                var info = httppost.responseText;
+                var temp = JSON.parse(info);
+                var miner = temp['miner'];
+                var ocon = temp['con'];
+                var lucky_24h = temp['24h'];
+                var lucky_7d = temp['7d'];
+                var lucky_30d = temp['30d'];
+                var path_24h = temp['24h_path'];
+                var path_7d = temp['7d_path'];
+                var path_30d = temp['30d_path']
+                document.getElementById('ominer').value = miner;
+                document.getElementById('ocon').value = ocon;
+                document.getElementById('o24h').value = lucky_24h;
+                document.getElementById('o7d').value = lucky_7d;
+                document.getElementById('o30d').value = lucky_30d;
+                document.getElementById('path_24h').src = path_24h;
+                document.getElementById('path_7d').src = path_7d;
+                document.getElementById('path_30d').src = path_30d;
+            }
+        }
+        httppost.send(minerid)
+    }
+
+
+</script>
+<body>
+    <div class="container-fluid">
+	<div class="row-fluid">
+		<div class="span12" id="div1">
+			<form class="form-search">
+{#                <input type="date" id="date1" value=""/>#}
+                <input type="date" id="date1" placeholder="请输入时间"/>
+				<input type="text" id="miner" placeholder="请输入节点号"/>
+{#                <button type="submit" class="btn" onclick="post()">查询</button>#}
+                <input type="button" value="查询" onclick="post()"/>
+			</form>
+            <p id="p1">
+                节点号
+                <input type="text" id="ominer" value="">
+                有效算力
+                <input type="text" id="ocon" value="">
+                24h幸运值
+                <input type="text" id="o24h" value="">
+                7d幸运值
+                <input type="text" id="o7d" value="">
+                30d幸运值
+                <input type="text" id="o30d" value="">
+            </p>
+            <p id="p2">
+                <img alt="image" class="img-circle" src="" height="600" width="600" id="path_24h">
+                <img alt="image" class="img-circle" src="" height="600" width="600" id="path_7d">
+                <img alt="image" class="img-circle" src="" height="600" width="600" id="path_30d">
+            </p>
+		</div>
+	</div>
+    </div>
+</body>
+<script>
+    $(document).ready(function () {
+        var time = new Date();
+        var day = ("0" + time.getDate()).slice(-2);
+        var month = ("0" + (time.getMonth() + 1)).slice(-2);
+        var today = time.getFullYear() + "-" + (month) + "-" + (day);
+        $('#date1').val(today);
+    })
+</script>
+</html>
